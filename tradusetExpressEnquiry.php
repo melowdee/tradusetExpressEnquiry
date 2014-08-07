@@ -78,7 +78,7 @@ class traduset_enquiry_widget extends WP_Widget
 
             if (isset($_POST["customerEmail"])) {
                 if (!filter_var($_POST['customerEmail'], FILTER_VALIDATE_EMAIL)) {
-                    $invalidEmailMessage = __('The E-Mail seems to be invalid.', 'traduset');
+                    $invalidEmailMessage = __('Email address seems invalid.', 'traduset');
                     $enquiryFormErrors['customerEmail'] = "<div class=\"error\">" . $invalidEmailMessage . "</div>";
                     $enquiryFormErrors['customerEmailErrorClass'] = ' class="error" ';
                 }
@@ -263,12 +263,17 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         $sendForm = __('Send', 'traduset');
         $uploadFileMessage = __('uploadFileMessage', 'traduset');
         $successMessage = __('successMessage', 'traduset');
+        $missingFieldMessage = __('Please fill the required field.', 'traduset');
+        $invalidEmailMessage = __('Email address seems invalid.', 'traduset');
+        $missingEmailMessage = __('We need your email address to contact you.', 'traduset');
+        $invalidFileFormatMessage = __('invalidFileFormatMessage', 'traduset');
+
 
         $form = '<form action="' . $_SERVER['PHP_SELF'] . '" method="post" name="expressEnquiry" enctype="multipart/form-data" id="expressEnquiryForm">
             <fieldset>
 
-            <label>' . $sourceLanguage . '</label>
-            <input type="text" name="sourceLanguage" value="' . $enquiryFormValues['sourceLanguage'] . '" required="required" ' . $enquiryFormErrors['sourceLanguageErrorClass'] . ' >' .
+            <label  for="sourceLanguage">' . $sourceLanguage . '</label>
+            <input type="text" id="sourceLanguage" name="sourceLanguage"  value="' . $enquiryFormValues['sourceLanguage'] . '" required="required" ' . $enquiryFormErrors['sourceLanguageErrorClass'] . ' >' .
             $enquiryFormErrors['sourceLanguage'] .
 
             '<label>' . $targetLanguage . '</label>
@@ -307,7 +312,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 
     $(function() {
 // initialize tooltip
-        $("span#exclamation_mark").tooltip({
+        jQuery("span#exclamation_mark").tooltip({
             // tweak the position
             position: \'top center\',
             // use the "slide" effect
@@ -319,7 +324,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 </script>';
         $progressJQuery = '
         <script>
-        $(function() {
+        jQuery(function() {
 
     var progressbar = jQuery(\'.progressbar\');
     var percent = jQuery(\'.percent\');
@@ -327,6 +332,32 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
     var progress = jQuery(\'.progress\');
     var expressEnquiryForm = jQuery(\'#expressEnquiryForm\');
     var expressEnquirySubmit = jQuery(\'#expressEnquirySubmit\');
+
+    jQuery("#expressEnquiryForm").validate({
+    rules: {
+        sourceLanguage: "required",
+        targetLanguage: "required",
+        customerEmail: {
+            required: true,
+            email: true
+        },
+       \'uploadfile[]\': {
+            required: false,
+            accept: "text/plain,text/xml,text/richtext,application/pdf,application/msword,application/excel,application/x-excel,application/x-msexcel,application/vnd.ms-excel,application/mspowerpoint,application/vnd.ms-powerpoint,application/vnd.oasis.opendocument.*,application/rtf,application/x-rtf,application/plain,image/gif,image/jpeg,image/pjpeg,image/x-pict,image/pict,image/png,image/tiff,image/x-tiff"
+        }
+    },
+    messages: {
+        sourceLanguage: "' . $missingFieldMessage . '",
+        targetLanguage: "' . $missingFieldMessage . '",
+        customerName: "' . $missingFieldMessage . '",
+        customerEmail: {
+            required: "' . $missingEmailMessage . '",
+            email: "' . $invalidEmailMessage . '"
+        },
+        \'uploadfile[]\': "' . $invalidFileFormatMessage . '"
+    }
+    });
+
 
     jQuery(\'form\').ajaxForm({
         beforeSend: function() {
@@ -336,6 +367,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         percent.html(percentVal);
     },
         uploadProgress: function(event, position, total, percentComplete) {
+
         var percentVal = percentComplete + \'%\';
         expressEnquirySubmit.hide();
         progress.css("display", "block");
@@ -343,7 +375,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         percent.html(percentVal);
     },
         complete: function() {
-        status.html(\'<div class=\"success\"><h2>'.$successMessage.'</div>\');
+        status.html(\'<div class=\"success\"><h2>' . $successMessage . '</div>\');
         expressEnquiryForm.fadeOut( "slow" );
     }
     });
@@ -361,3 +393,17 @@ function traduset_enquiry_load_widget()
 }
 
 add_action('widgets_init', 'traduset_enquiry_load_widget');
+
+function traduset_enquiry_scripts()
+{
+    wp_enqueue_script('jquery.form.min', get_template_directory_uri() . '/assets/js/jquery.form.min.js', array(), '20140807', true);
+
+    wp_enqueue_script('jquery.validate.min', get_template_directory_uri() . '/assets/js/jquery.validate.min.js', array(), '20140807', true);
+
+    wp_enqueue_script('additional-methods.min', get_template_directory_uri() . '/assets/js/additional-methods.min.js', array(), '20140807', true);
+
+}
+
+;
+
+add_action('wp_enqueue_scripts', 'traduset_enquiry_scripts');
