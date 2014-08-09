@@ -336,8 +336,6 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         <script>
         jQuery(function() {
 
-        jQuery(\'#expressEnquiryUpload\').customFileInput();
-
     var progressbar = jQuery(\'.progressbar\');
     var percent = jQuery(\'.percent\');
     var status = jQuery(\'#status\');
