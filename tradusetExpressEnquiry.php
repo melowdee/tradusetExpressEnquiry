@@ -18,6 +18,7 @@ Description: Ein Webformular für die Sidebar
 class traduset_enquiry_widget extends WP_Widget
 {
 
+
     function __construct()
     {
         parent::__construct(
@@ -42,6 +43,7 @@ class traduset_enquiry_widget extends WP_Widget
 
         $upload_dir = wp_upload_dir();
         $base_dir = $upload_dir['basedir'] . '/enquiry/';
+        $maxUploadSize = 2097152;
 
 // before and after widget arguments are defined by themes
         echo $args['before_widget'];
@@ -79,7 +81,7 @@ class traduset_enquiry_widget extends WP_Widget
             if (isset($_POST["customerEmail"])) {
                 if (!filter_var($_POST['customerEmail'], FILTER_VALIDATE_EMAIL)) {
                     $invalidEmailMessage = __('Email address seems invalid.', 'traduset');
-                    $enquiryFormErrors['customerEmail'] = "<div class=\"error\">" . $invalidEmailMessage . "</div>";
+                    $enquiryFormErrors['customerEmail'] = "<div class=\"error\" id=\"emailError\">" . $invalidEmailMessage . "</div>";
                     $enquiryFormErrors['customerEmailErrorClass'] = ' class="error" ';
                 }
                 $enquiryFormValues['customerEmail'] = isset($_POST['customerEmail']) ? htmlentities($_POST['customerEmail']) : '';
@@ -87,9 +89,11 @@ class traduset_enquiry_widget extends WP_Widget
 
             if (count($enquiryFormErrors) == 0) {
 
-
+                $maxAllowdUploadSize =
                 $allowed = array('pdf', 'gif', 'jpg', 'JPG', 'png', 'docx', 'doc', 'xls', 'xlsx', 'ppt', 'pptx', 'ods', 'csv', 'txt', 'pages', 'rtf');
                 $attachments = array();
+
+                $fileSizeTotal = 0;
 
                 foreach ($_FILES['uploadfile']['tmp_name'] as $key => $file_tmp) {
                     //Get the temp file path
@@ -97,15 +101,21 @@ class traduset_enquiry_widget extends WP_Widget
 
                     $file_name = $_FILES['uploadfile']['name'][$key];
                     $error = $_FILES['uploadfile']['error'][$key];
+                    $fileSizeTotal = $_FILES['uploadfile']['size'][$key] + $fileSizeTotal;
 
                     if (!$file_name)
                         break;
+                    if($fileSizeTotal > $maxUploadSize){
+                        $maxFileSizeMessage = __('This file is too large. You can upload max 12MB.','traduset');
+                        $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $maxFileSizeMessage . "</div>";
+                        break;
+                    }
 
                     if ($error == 0) {
                         $ext = pathinfo($file_name, PATHINFO_EXTENSION);
                         if (!in_array($ext, $allowed)) {
                             $invalidFileFormatMessage = __('invalidFileFormatMessage', 'traduset');
-                            $enquiryFormErrors['uploadFile'] = "<div class=\"error\">" . $invalidFileFormatMessage . "</div>";
+                            $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $invalidFileFormatMessage . "</div>";
                         } else {
                             //keine Fehler, file wird in upload dir beweget
                             if ($file_tmp != "") {
@@ -115,25 +125,25 @@ class traduset_enquiry_widget extends WP_Widget
                                 } else {
                                     //file konnte nicht bewegt werden
                                     $uploadErrorMessage = __('uploadErrorMessage', 'traduset');
-                                    $enquiryFormErrors['uploadFile'] = "<div class=\"error\">" . $uploadErrorMessage . "</div>";
+                                    $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $uploadErrorMessage . "</div>";
                                 }
                             }
 
 
                         }
                     } else {
-                        if ($error == 1) {
-                            $maxFileSizeMessage = __('maxFileSizeMessage');
-                            $enquiryFormErrors['uploadFile'] = "<div class=\"error\">" . $maxFileSizeMessage . "</div>";
-                        } elseif ($error > 1) {
+                        if ($error == 1 || $error == 2) {
+                            $maxFileSizeMessage = __('This file is too large. You can upload max 12MB.','traduset');
+                            $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $maxFileSizeMessage . "</div>";
+                        } elseif ($error > 2) {
                             $uploadErrorMessage = __('uploadErrorMessage', 'traduset');
-                            $enquiryFormErrors['uploadFile'] = "<div class=\"error\">" . $uploadErrorMessage . "</div>";
+                            $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $uploadErrorMessage . "</div>";
                         }
                     }
                 }
             }
             if (count($enquiryFormErrors) > 0) {
-                $content = $this->getEnquiryForm($enquiryFormValues, $enquiryFormErrors);
+                $content = $this->getEnquiryForm($enquiryFormValues, $enquiryFormErrors, $maxUploadSize);
             } else {
 
                 $headers = 'From: Taduset Übersetzungsbüro <info@traduset.de>' . "\r\n";
@@ -168,7 +178,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 
             }
         } else {
-            $content = $this->getEnquiryForm($enquiryFormValues, $enquiryFormErrors);
+            $content = $this->getEnquiryForm($enquiryFormValues, $enquiryFormErrors, $maxUploadSize);
         }
 
         echo __($content, 'traduset_enquiry_domain');
@@ -253,7 +263,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
      * @param $enquiryFormErrors
      * @return string
      */
-    public function getEnquiryForm($enquiryFormValues, $enquiryFormErrors)
+    public function getEnquiryForm($enquiryFormValues, $enquiryFormErrors , $maxUploadSize)
     {
         $sourceLanguage = __('Source language', 'traduset');
         $targetLanguage = __('Target language', 'traduset');
@@ -262,18 +272,17 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         $uploadFile = __('Upload file', 'traduset');
         $sendForm = __('Send', 'traduset');
         $uploadFileMessage = __('uploadFileMessage', 'traduset');
-        $successMessage = __('successMessage', 'traduset');
+        $successMessage = '<div class=\"success\"><h2>' .  __('successMessage', 'traduset') . '</h2></div>';
         $missingFieldMessage = __('Please fill the required field.', 'traduset');
         $invalidEmailMessage = __('Email address seems invalid.', 'traduset');
         $missingEmailMessage = __('We need your email address to contact you.', 'traduset');
         $invalidFileFormatMessage = __('invalidFileFormatMessage', 'traduset');
 
-
         $form = '<form action="' . $_SERVER['PHP_SELF'] . '" method="post" name="expressEnquiry" enctype="multipart/form-data" id="expressEnquiryForm">
             <fieldset>
 
             <label  for="sourceLanguage">' . $sourceLanguage . '</label>
-            <input type="text" id="sourceLanguage" name="sourceLanguage"  value="' . $enquiryFormValues['sourceLanguage'] . '" required="required" ' . $enquiryFormErrors['sourceLanguageErrorClass'] . ' >' .
+            <input type="text" id="sourceLanguage" name="sourceLanguage"  value="' . $enquiryFormValues['sourceLanguage'] . '"  ' . $enquiryFormErrors['sourceLanguageErrorClass'] . ' >' .
             $enquiryFormErrors['sourceLanguage'] .
 
             '<label>' . $targetLanguage . '</label>
@@ -285,7 +294,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
             $enquiryFormErrors['customerName'] .
 
             '<label>' . $customerEmail . '</label>
-            <input type="email" name="customerEmail" value="' . $enquiryFormValues['customerEmail'] . '" required="required" ' . $enquiryFormErrors['customerEmailErrorClass'] . '  >' .
+            <input type="email" name="customerEmail" id="emailInput" value="' . $enquiryFormValues['customerEmail'] . '" required="required" ' . $enquiryFormErrors['customerEmailErrorClass'] . '  >' .
             $enquiryFormErrors['customerEmail'] .
             '<label>' . $uploadFile . '<span id="exclamation_mark">!</span>
             </label>
@@ -294,7 +303,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
             $uploadFileMessage .
             '</div>
             </div>
-
+            <input type="hidden" name="MAX_FILE_SIZE" value="'.$maxUploadSize.'" />
             <input type="file" multiple  name="uploadfile[]" class="fileUpload" id="expressEnquiryUpload" >' .
             $enquiryFormErrors['uploadFile'] .
             '
@@ -309,6 +318,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
             <div id="status"></div>
 
             <script>
+
 
     $(function() {
 // initialize tooltip
@@ -326,6 +336,8 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         <script>
         jQuery(function() {
 
+        jQuery(\'#expressEnquiryUpload\').customFileInput();
+
     var progressbar = jQuery(\'.progressbar\');
     var percent = jQuery(\'.percent\');
     var status = jQuery(\'#status\');
@@ -340,10 +352,6 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         customerEmail: {
             required: true,
             email: true
-        },
-       \'uploadfile[]\': {
-            required: false,
-            accept: "text/plain,text/xml,text/richtext,application/pdf,application/msword,application/excel,application/x-excel,application/x-msexcel,application/vnd.ms-excel,application/mspowerpoint,application/vnd.ms-powerpoint,application/vnd.oasis.opendocument.*,application/rtf,application/x-rtf,application/plain,image/gif,image/jpeg,image/pjpeg,image/x-pict,image/pict,image/png,image/tiff,image/x-tiff"
         }
     },
     messages: {
@@ -361,24 +369,54 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 
     jQuery(\'form\').ajaxForm({
         beforeSend: function() {
-        status.empty();
-        var percentVal = \'0%\';
-        progressbar.width(percentVal);
-        percent.html(percentVal);
-    },
+            status.empty();
+            var percentVal = \'0%\';
+            progressbar.width(percentVal);
+            percent.html(percentVal);
+        },
         uploadProgress: function(event, position, total, percentComplete) {
 
-        var percentVal = percentComplete + \'%\';
-        expressEnquirySubmit.hide();
-        progress.css("display", "block");
-        progressbar.width(percentVal);
-        percent.html(percentVal);
-    },
-        complete: function() {
-        status.html(\'<div class=\"success\"><h2>' . $successMessage . '</div>\');
-        expressEnquiryForm.fadeOut( "slow" );
-    }
+            var percentVal = percentComplete + \'%\';
+            expressEnquirySubmit.hide();
+            progress.css("display", "block");
+            progressbar.width(percentVal);
+            percent.html(percentVal);
+        },
+        complete: function(xhr) {
+            var responseText =  xhr.responseText ;
+            var content = \'' . $successMessage . '\';
+
+            var enquiryFormError = jQuery(responseText).find("div.error").html();
+
+            if (enquiryFormError){
+                expressEnquirySubmit.show();
+                progress.fadeOut();
+                var emailError = jQuery(responseText).find("#emailError");
+                if(emailError.length > 0){
+                    jQuery(\'#emailInput\').css("border", "1px solid #ff0000");
+                }else{
+                    jQuery(\'#emailInput\').css("border", "none");
+                }
+
+                var uploadError = jQuery(responseText).find("#uploadError");
+
+                if(uploadError.length > 0){
+                    jQuery(\'#expressEnquiryUpload\').css("border", "1px solid #ff0000");
+                }else{
+                    jQuery(\'#expressEnquiryUpload\').css("border", "none");
+                }
+
+
+                content = \'<div class=\"error\">\' + enquiryFormError + \'</div>\';
+
+            }else{
+                expressEnquiryForm.fadeOut( "slow" );
+            }
+
+            status.html(content);
+        }
     });
+
 });
 </script>';
 
