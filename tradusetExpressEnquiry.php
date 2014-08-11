@@ -43,7 +43,8 @@ class traduset_enquiry_widget extends WP_Widget
 
         $upload_dir = wp_upload_dir();
         $base_dir = $upload_dir['basedir'] . '/enquiry/';
-        $maxUploadSize = 2097152;
+        //max upload size 10mb
+        $maxUploadSize = 10485760;
 
 // before and after widget arguments are defined by themes
         echo $args['before_widget'];
@@ -100,6 +101,7 @@ class traduset_enquiry_widget extends WP_Widget
 
 
                     $file_name = $_FILES['uploadfile']['name'][$key];
+
                     $error = $_FILES['uploadfile']['error'][$key];
                     $fileSizeTotal = $_FILES['uploadfile']['size'][$key] + $fileSizeTotal;
 
@@ -114,7 +116,7 @@ class traduset_enquiry_widget extends WP_Widget
                     if ($error == 0) {
                         $ext = pathinfo($file_name, PATHINFO_EXTENSION);
                         if (!in_array($ext, $allowed)) {
-                            $invalidFileFormatMessage = __('invalidFileFormatMessage', 'traduset');
+                            $invalidFileFormatMessage = __('This file type is not allowed.', 'traduset');
                             $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $invalidFileFormatMessage . "</div>";
                         } else {
                             //keine Fehler, file wird in upload dir beweget
@@ -124,7 +126,7 @@ class traduset_enquiry_widget extends WP_Widget
                                     array_push($attachments, $new_file_path);
                                 } else {
                                     //file konnte nicht bewegt werden
-                                    $uploadErrorMessage = __('uploadErrorMessage', 'traduset');
+                                    $uploadErrorMessage = __('Failed to upload file. Error occurred.', 'traduset');
                                     $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $uploadErrorMessage . "</div>";
                                 }
                             }
@@ -133,10 +135,10 @@ class traduset_enquiry_widget extends WP_Widget
                         }
                     } else {
                         if ($error == 1 || $error == 2) {
-                            $maxFileSizeMessage = __('This file is too large. You can upload max 12MB.','traduset');
+                            $maxFileSizeMessage = __('This file is too large. You can upload max 10MB.','traduset');
                             $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $maxFileSizeMessage . "</div>";
                         } elseif ($error > 2) {
-                            $uploadErrorMessage = __('uploadErrorMessage', 'traduset');
+                            $uploadErrorMessage = __('Failed to upload file. Error occurred.', 'traduset');
                             $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $uploadErrorMessage . "</div>";
                         }
                     }
@@ -164,7 +166,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
                     $enquiryEmail = 'info@traduset.de';
 
                 if (wp_mail($enquiryEmail, $subject, $message, $headers, $attachments)) {
-                    $successMessage = __('successMessage', 'traduset');
+                    $successMessage = __('Your message was sent successfully. Thanks.', 'traduset');
                     $content = "<div class='success'>" . $successMessage . "</div>";
 
                     //files nach dem emailvesand wieder löschen
@@ -172,7 +174,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
                         unlink($attachment);
                     }
                 } else {
-                    $sendErrorMessage = __('sendErrorMessage', 'traduset');
+                    $sendErrorMessage = __('Failed to send your message. Please try later or contact the administrator by another method.', 'traduset');
                     $content = "<div class=\"error\">" . $sendErrorMessage . "</div>";
                 }
 
@@ -271,12 +273,16 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         $customerEmail = __('E-Mail', 'traduset');
         $uploadFile = __('Upload file', 'traduset');
         $sendForm = __('Send', 'traduset');
-        $uploadFileMessage = __('uploadFileMessage', 'traduset');
-        $successMessage = '<div class=\"success\"><h2>' .  __('successMessage', 'traduset') . '</h2></div>';
+        $uploadFileMessage = __('If you press the Control-Key you can choose more then one file. Valid file types are: pdf, gif, jpg, png, docx, doc, xls, xlsx, ppt, pptx, ods, csv, txt, pages, rtf.', 'traduset');
+        $successMessage = '<div class=\"success\"><h2>' .  __('Your message was sent successfully. Thanks.', 'traduset') . '</h2></div>';
         $missingFieldMessage = __('Please fill the required field.', 'traduset');
         $invalidEmailMessage = __('Email address seems invalid.', 'traduset');
         $missingEmailMessage = __('We need your email address to contact you.', 'traduset');
-        $invalidFileFormatMessage = __('invalidFileFormatMessage', 'traduset');
+        $invalidFileFormatMessage = __('This file type is not allowed.', 'traduset');
+        $maxFileSizeMessage = __('This file is too large. You can upload max 10MB.','traduset');
+        $fileLabel = __('file', 'traduset');
+        $filesLabel = __('files', 'traduset');
+
 
         $form = '<form action="' . $_SERVER['PHP_SELF'] . '" method="post" name="expressEnquiry" enctype="multipart/form-data" id="expressEnquiryForm">
             <fieldset>
@@ -304,24 +310,94 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
             '</div>
             </div>
             <input type="hidden" name="MAX_FILE_SIZE" value="'.$maxUploadSize.'" />
-            <input type="file" multiple  name="uploadfile[]" class="fileUpload" id="expressEnquiryUpload" >' .
+            <div class="fileUpload">
+            <div class="uploadMessage"></div>
+            <input type="file" multiple  name="uploadfile[]" class="upload" id="expressEnquiryUpload" accept="text/plain,text/xml,text/richtext,application/pdf,application/msword,application/excel,application/x-excel,application/x-msexcel,application/vnd.ms-excel,application/mspowerpoint,application/vnd.ms-powerpoint,application/vnd.oasis.opendocument.*,application/rtf,application/x-rtf,application/plain,application/x-iwork-pages-sffpages,application/x-iwork-keynote-sffkey,application/x-iwork-numbers-sffnumbers,image/gif,image/jpeg,image/pjpeg,image/x-pict,image/pict,image/png,image/tiff,image/x-tiff">
+              <span class="uploadButton">Datei wählen</span>
+            <span class="uploadValue"></span>' .
             $enquiryFormErrors['uploadFile'] .
-            '
-            <div class="progress">
-                <div class="progressbar"></div >
-                <div class="percent">0%</div >
+            '   <div class="progress">
+                    <div class="progressbar"></div >
+                    <div class="percent">0%</div >
+                </div>
             </div>
+            <br />
             <input type="submit" name="submitExpressEnquiry" value="' . $sendForm . '" name="send" id="expressEnquirySubmit">
 
             </fieldset>
             </form>
-            <div id="status"></div>
+            <div id="status"></div>';
 
-            <script>
+        $progressJQuery = '
+        <script>
+        jQuery(\'#expressEnquiryUpload\').on(\'change\',function(){
+
+            var files = jQuery("#expressEnquiryUpload")[0].files;
+            var fileCount = files.length;
+            var totalSize = 0;
+            var maxSize = '.$maxUploadSize.';
 
 
-    $(function() {
-// initialize tooltip
+            for (var i = 0; i < fileCount; i++){
+
+                if(jQuery.browser.msie){
+                    var objFSO = new ActiveXObject("Scripting.FileSystemObject");
+                    var sPath = $("#flUpload")[0].value;
+                    var objFile = objFSO.getFile(sPath);
+                    totalSize = totalSize + objFile.size;
+
+                }else{
+                    totalSize = totalSize + files[i].size;
+                    console.log(files[i].type);
+                }
+            }
+            if (totalSize > maxSize){
+                var maxFileSizeMessage = \'<div class="error">' .$maxFileSizeMessage.'</div>\';
+                jQuery(\'.uploadValue\').html(\'\').append(maxFileSizeMessage);
+                jQuery(\'#expressEnquirySubmit\').attr(\'disabled\', \'disabled\');
+
+            }else{
+                var fileLabel = \''.$fileLabel.'\';
+                var filesLabel = \''.$filesLabel.'\';
+
+                jQuery(\'#expressEnquirySubmit\').removeAttr(\'disabled\');
+
+                totalSize = totalSize / 1024;
+
+                if (totalSize / 1024 > 1){
+                    totalSize = (Math.round((totalSize / 1024) * 100) / 100)
+                    totalSize = totalSize + " MB";
+                }else{
+                    totalSize = (Math.round(totalSize * 100) / 100)
+                    totalSize = totalSize + " KB";
+                }
+
+                var message;
+                switch (fileCount) {
+                    case 0:
+                    message = \'Keine Datein ausgewählt\';
+                    break;
+                    case 1:
+                    message = fileCount + \' \' + fileLabel + \', \' + totalSize;
+                    break;
+                    default:
+                    message = fileCount + \' \' + filesLabel + \', \' + totalSize;
+                    break;
+                 }
+
+
+
+                jQuery(\'.uploadValue\').html(\'\').append(message);
+            }
+
+            console.log(totalSize, maxSize);
+
+
+        });
+
+        jQuery(function() {
+
+ // initialize tooltip
         jQuery("span#exclamation_mark").tooltip({
             // tweak the position
             position: \'top center\',
@@ -329,12 +405,6 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
             effect: \'slide\'
 
         });
-    });
-
-</script>';
-        $progressJQuery = '
-        <script>
-        jQuery(function() {
 
     var progressbar = jQuery(\'.progressbar\');
     var percent = jQuery(\'.percent\');
@@ -350,6 +420,10 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         customerEmail: {
             required: true,
             email: true
+        },
+        \'uploadfile[]\': {
+            required: false,
+            accept: "text/plain,text/xml,text/richtext,application/pdf,application/vnd.openxmlformats-officedocument*,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,application/excel,application/x-excel,application/x-msexcel,application/vnd.ms-excel,application/mspowerpoint,application/vnd.ms-powerpoint,application/vnd.oasis.opendocument.*,application/rtf,application/x-rtf,application/plain,application/x-iwork-pages-sffpages,application/x-iwork-keynote-sffkey,application/x-iwork-numbers-sffnumbers,image/gif,image/jpeg,image/pjpeg,image/x-pict,image/pict,image/png,image/tiff,image/x-tiff"
         }
     },
     messages: {
@@ -360,8 +434,8 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
             required: "' . $missingEmailMessage . '",
             email: "' . $invalidEmailMessage . '"
         },
-        \'uploadfile[]\': "' . $invalidFileFormatMessage . '"
-    }
+        \'uploadfile[]\':"' . $invalidFileFormatMessage . '"
+        }
     });
 
 
