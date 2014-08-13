@@ -275,7 +275,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         $sourceLanguage = __('Source language', 'traduset');
         $targetLanguage = __('Target language', 'traduset');
         $customerName = __('Name', 'traduset');
-        $customerEmail = __('E-Mail', 'traduset');
+        $customerEmail = __('E-mail', 'traduset');
         $uploadFile = __('Upload file', 'traduset');
         $sendForm = __('Send', 'traduset');
         $uploadFileMessage = __('If you press the Control-Key you can choose more then one file. Valid file types are: pdf, gif, jpg, png, docx, doc, xls, xlsx, ppt, pptx, ods, csv, txt, pages, rtf.', 'traduset');
