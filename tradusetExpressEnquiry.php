@@ -284,6 +284,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         $invalidEmailMessage = __('Email address seems invalid.', 'traduset');
         $missingEmailMessage = __('We need your email address to contact you.', 'traduset');
         $chooseFile = __('Choose file(s)', 'traduset');
+        $selected = __('selected', 'traduset');
         $maxFileSizeMessage = __('This file is too large. You can upload max 10MB.', 'traduset');
         $fileLabel = __('file', 'traduset');
         $filesLabel = __('files', 'traduset');
@@ -393,7 +394,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
                     break;
                  }
 
-                message = "<strong>Ausgewählt</strong><br />" + message;
+                message = "<strong>'.$selected.'</strong><br />" + message;
 
                 jQuery(\'.uploadValue\').html(\'\').append(message);
             }
