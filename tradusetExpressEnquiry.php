@@ -288,6 +288,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         $maxFileSizeMessage = __('This file is too large. You can upload max 10MB.', 'traduset');
         $fileLabel = __('file', 'traduset');
         $filesLabel = __('files', 'traduset');
+        $noFiles = __('no files choosen','traduset');
 
 
         $form = '<form action="' . $_SERVER['PHP_SELF'] . '" method="post" name="expressEnquiry" enctype="multipart/form-data" id="expressEnquiryForm">
@@ -384,7 +385,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
                 var message;
                 switch (fileCount) {
                     case 0:
-                    message = \'Keine Datein ausgewählt\';
+                    message = \''.$noFiles.'\';
                     break;
                     case 1:
                     message = fileCount + \' \' + fileLabel + \', \' + totalSize;
