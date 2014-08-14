@@ -283,7 +283,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         $missingFieldMessage = __('Please fill the required field.', 'traduset');
         $invalidEmailMessage = __('Email address seems invalid.', 'traduset');
         $missingEmailMessage = __('We need your email address to contact you.', 'traduset');
-        $invalidFileFormatMessage = __('This file type is not allowed.', 'traduset');
+        $chooseFile = __('Choose file(s)', 'traduset');
         $maxFileSizeMessage = __('This file is too large. You can upload max 10MB.', 'traduset');
         $fileLabel = __('file', 'traduset');
         $filesLabel = __('files', 'traduset');
@@ -319,7 +319,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
             <div class="uploadMessage"></div>
             <input type="file" multiple  name="uploadfile[]" class="upload" id="expressEnquiryUpload">
             <span class="clearfix">
-            <span class="uploadButton">Datei wählen</span>
+            <span class="uploadButton">'.$chooseFile.'</span>
             <span class="uploadValue"></span>
             </span>
             ' .
