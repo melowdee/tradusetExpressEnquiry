@@ -64,6 +64,7 @@ class traduset_enquiry_widget extends WP_Widget
             $enquiryFormValues['sourceLanguage'] = $_POST['sourceLanguage'] = isset($_POST['sourceLanguage']) ? htmlentities($_POST['sourceLanguage']) : '';
             $enquiryFormValues['targetLanguage'] = $_POST['targetLanguage'] = isset($_POST['targetLanguage']) ? htmlentities($_POST['targetLanguage']) : '';
             $enquiryFormValues['customerName'] = $_POST['customerName'] = isset($_POST['customerName']) ? htmlentities($_POST['customerName']) : '';
+            $enquiryFormValues['certified'] = $_POST['certified'] = isset($_POST['certified']) ? htmlentities($_POST['certified']) : '';
 
             if (empty($_POST['sourceLanguage'])) {
                 $missingSourceLanguage = __('Please fill the Source language field.', 'traduset');
@@ -161,11 +162,12 @@ class traduset_enquiry_widget extends WP_Widget
 Von: %s, %s
 Ausgangssprache: %s
 Zielsprache: %s
+beglaubigt: %s
 
 ---
 Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 
-                    $message = sprintf($format, $_POST['customerName'], $_POST['customerEmail'], $_POST['sourceLanguage'], $_POST['targetLanguage']);
+                    $message = sprintf($format, $_POST['customerName'], $_POST['customerEmail'], $_POST['sourceLanguage'], $_POST['targetLanguage'], $_POST['certified']);
 
                     if (!filter_var($enquiryEmail, FILTER_VALIDATE_EMAIL))
                         $enquiryEmail = 'info@traduset.de';
@@ -245,6 +247,10 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
                     echo 'selected';
                 } ?>>Spanisch
                 </option>
+                <option value="it" <?php if ($language == 'it') {
+                    echo 'selected';
+                } ?>>Italienisch
+                </option>
                 <option value="ca" <?php if ($language == 'ca') {
                     echo 'selected';
                 } ?>>Katalanisch
@@ -289,6 +295,9 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         $fileLabel = __('file', 'traduset');
         $filesLabel = __('files', 'traduset');
         $noFiles = __('no files choosen','traduset');
+        $certified = __('certified','traduset');
+        $yes = __('yes', 'traduset');
+        $no = __('no', 'traduset');
 
 
         $form = '<form action="' . $_SERVER['PHP_SELF'] . '" method="post" name="expressEnquiry" enctype="multipart/form-data" id="expressEnquiryForm">
@@ -301,6 +310,9 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
             '<label>' . $targetLanguage . '</label>
             <input type="text" name="targetLanguage" value="' . $enquiryFormValues['targetLanguage'] . '" required="required" ' . $enquiryFormErrors['targetLanguageErrorClass'] . ' >' .
             $enquiryFormErrors['targetLanguage'] .
+            '<span class="radioset">'.$certified.': '.
+            $yes.': <input type="radio" name="certified" value="ja"> '.
+            $no.': <input type="radio" name="certified" value="nein"></span>'.
 
             '<label>' . $customerName . '</label>
             <input type="text" name="customerName" value="' . $enquiryFormValues['customerName'] . '" required="required" ' . $enquiryFormErrors['customerNameErrorClass'] . ' >' .
