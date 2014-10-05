@@ -98,54 +98,55 @@ class traduset_enquiry_widget extends WP_Widget
                 $attachments = array();
 
                 $fileSizeTotal = 0;
-
-                foreach ($_FILES['uploadfile']['tmp_name'] as $key => $file_tmp) {
-                    //Get the temp file path
-
-
-                    $file_name = $_FILES['uploadfile']['name'][$key];
-
-                    $error = $_FILES['uploadfile']['error'][$key];
-                    $fileSizeTotal = $_FILES['uploadfile']['size'][$key] + $fileSizeTotal;
-
-                    if (!$file_name)
-                        break;
-                    if ($fileSizeTotal > $maxUploadSize) {
-                        $maxFileSizeMessage = __('This file is too large. You can upload max 12MB.', 'traduset');
-                        $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $maxFileSizeMessage . "</div>";
-                        break;
-                    }
-
-                    if ($error == 0) {
-                        $ext = pathinfo($file_name, PATHINFO_EXTENSION);
-                        if (!in_array($ext, $allowed)) {
-                            $invalidFileFormatMessage = __('This file type is not allowed.', 'traduset');
-                            $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $invalidFileFormatMessage . "</div>";
-                        } else {
-                            //keine Fehler, file wird in upload dir beweget und nur beim submit des Forms
-                            if (isset ($_POST["submitExpressEnquiry"]) && $file_tmp != "") {
-                                $new_file_path = $base_dir . $file_name;
-                                if (move_uploaded_file($file_tmp, $new_file_path)) {
-                                    array_push($attachments, $new_file_path);
-                                } else {
-                                    //file konnte nicht bewegt werden
-                                    $uploadErrorMessage = __('Failed to upload file. Error occurred.', 'traduset');
-                                    $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $uploadErrorMessage . "</div>";
-                                }
-                            }
+                if(isset $_FILES['uploadfile']) {
+                    foreach ($_FILES['uploadfile']['tmp_name'] as $key => $file_tmp) {
+                        //Get the temp file path
 
 
-                        }
-                    } else {
-                        if ($error == 1 || $error == 2) {
-                            $maxFileSizeMessage = __('This file is too large. You can upload max 10MB.', 'traduset');
+                        $file_name = $_FILES['uploadfile']['name'][$key];
+
+                        $error = $_FILES['uploadfile']['error'][$key];
+                        $fileSizeTotal = $_FILES['uploadfile']['size'][$key] + $fileSizeTotal;
+
+                        if (!$file_name)
+                            break;
+                        if ($fileSizeTotal > $maxUploadSize) {
+                            $maxFileSizeMessage = __('This file is too large. You can upload max 12MB.', 'traduset');
                             $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $maxFileSizeMessage . "</div>";
-                        } elseif ($error == 3) {
-                            $invalidFileFormatMessage = __('This file type is not allowed. Please choose an other', 'traduset');
-                            $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $invalidFileFormatMessage . "</div>";
-                        } elseif ($error > 3) {
-                            $uploadErrorMessage = __('Failed to upload file. Error occurred.', 'traduset');
-                            $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $uploadErrorMessage . "</div>";
+                            break;
+                        }
+
+                        if ($error == 0) {
+                            $ext = pathinfo($file_name, PATHINFO_EXTENSION);
+                            if (!in_array($ext, $allowed)) {
+                                $invalidFileFormatMessage = __('This file type is not allowed.', 'traduset');
+                                $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $invalidFileFormatMessage . "</div>";
+                            } else {
+                                //keine Fehler, file wird in upload dir beweget und nur beim submit des Forms
+                                if (isset ($_POST["submitExpressEnquiry"]) && $file_tmp != "") {
+                                    $new_file_path = $base_dir . $file_name;
+                                    if (move_uploaded_file($file_tmp, $new_file_path)) {
+                                        array_push($attachments, $new_file_path);
+                                    } else {
+                                        //file konnte nicht bewegt werden
+                                        $uploadErrorMessage = __('Failed to upload file. Error occurred.', 'traduset');
+                                        $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $uploadErrorMessage . "</div>";
+                                    }
+                                }
+
+
+                            }
+                        } else {
+                            if ($error == 1 || $error == 2) {
+                                $maxFileSizeMessage = __('This file is too large. You can upload max 10MB.', 'traduset');
+                                $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $maxFileSizeMessage . "</div>";
+                            } elseif ($error == 3) {
+                                $invalidFileFormatMessage = __('This file type is not allowed. Please choose an other', 'traduset');
+                                $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $invalidFileFormatMessage . "</div>";
+                            } elseif ($error > 3) {
+                                $uploadErrorMessage = __('Failed to upload file. Error occurred.', 'traduset');
+                                $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $uploadErrorMessage . "</div>";
+                            }
                         }
                     }
                 }
