@@ -268,6 +268,10 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
     <?php
     }
 
+    public function set_html_content_type() {
+        return 'text/html';
+}
+
 // Updating widget replacing old instances with new
     public function update($new_instance, $old_instance)
     {
