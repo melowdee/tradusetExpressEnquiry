@@ -167,7 +167,7 @@ beglaubigt: %s
 ---
 Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 
-                    $message = sprintf($format, $_POST['customerName'], $_POST['customerEmail'], $_POST['sourceLanguage'], $_POST['targetLanguage'], $_POST['certified']);
+                    $message = sprintf($format, urldecode($_POST['customerName']), $_POST['customerEmail'], $_POST['sourceLanguage'], $_POST['targetLanguage'], $_POST['certified']);
 
                     if (!filter_var($enquiryEmail, FILTER_VALIDATE_EMAIL))
                         $enquiryEmail = 'info@traduset.de';
