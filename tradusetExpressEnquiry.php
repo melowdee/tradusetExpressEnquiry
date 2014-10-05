@@ -155,7 +155,7 @@ class traduset_enquiry_widget extends WP_Widget
             } else {
                 if (isset ($_POST["submitExpressEnquiry"])) {
                     $headers = 'From: Taduset Übersetzungsbüro <info@traduset.de>' . "\r\n";
-                    $subject = 'Traduset Expressanfrage von ' . htmlentities($_POST['customerName'],ENT_NOQUOTES,"UTF-8");
+                    $subject = 'Traduset Expressanfrage von ' . utf8_encode($_POST['customerName']);
 
                     $format = "Expressanfrage
 
@@ -169,13 +169,11 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 
                     $message = sprintf($format, $_POST['customerName'], $_POST['customerEmail'], $_POST['sourceLanguage'], $_POST['targetLanguage'], $_POST['certified']);
 
-                    $message = htmlentities($message,ENT_NOQUOTES, "UTF-8");
+                    $message = utf8_encode($message);
 
                     if (!filter_var($enquiryEmail, FILTER_VALIDATE_EMAIL))
                         $enquiryEmail = 'info@traduset.de';
 
-
-                    add_filter( 'wp_mail_content_type','set_html_content_type' );
 
 
                     if (wp_mail($enquiryEmail, $subject, $message, $headers, $attachments)) {
@@ -186,7 +184,6 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
                         foreach ($attachments as $attachment) {
                             unlink($attachment);
                         }
-                        remove_filter( 'wp_mail_content_type', 'set_html_content_type');
                     } else {
                         $sendErrorMessage = __('Failed to send your message. Please try later or contact the administrator by another method.', 'traduset');
                         $content = "<div class=\"error\">" . $sendErrorMessage . "</div>";
@@ -268,9 +265,6 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
     <?php
     }
 
-    public function set_html_content_type() {
-        return 'text/html';
-}
 
 // Updating widget replacing old instances with new
     public function update($new_instance, $old_instance)
