@@ -155,7 +155,7 @@ class traduset_enquiry_widget extends WP_Widget
             } else {
                 if (isset ($_POST["submitExpressEnquiry"])) {
                     $headers = 'From: Taduset Übersetzungsbüro <info@traduset.de>' . "\r\n";
-                    $subject = 'Traduset Expressanfrage von ' . htmlentities($_POST['customerName']);
+                    $subject = 'Traduset Expressanfrage von ' . htmlentities($_POST['customerName'],ENT_NOQUOTES,"UTF-8");
 
                     $format = "Expressanfrage
 
@@ -167,7 +167,9 @@ beglaubigt: %s
 ---
 Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 
-                    $message = sprintf($format, htmlentities($_POST['customerName']), $_POST['customerEmail'], htmlentities($_POST['sourceLanguage']), htmlentities($_POST['targetLanguage']), $_POST['certified']);
+                    $message = sprintf($format, $_POST['customerName'], $_POST['customerEmail'], $_POST['sourceLanguage'], $_POST['targetLanguage'], $_POST['certified']);
+
+                    $message = htmlentities($message,ENT_NOQUOTES, "UTF-8");
 
                     if (!filter_var($enquiryEmail, FILTER_VALIDATE_EMAIL))
                         $enquiryEmail = 'info@traduset.de';
@@ -298,8 +300,6 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         $certified = __('certified','traduset');
         $yes = __('yes', 'traduset');
         $no = __('no', 'traduset');
-
-        $test = htmlentities("ääää öööö üüüü ääää", null, "UTF-8");
 
 
         $form = '<form action="' . $_SERVER['PHP_SELF'] . '" method="post" name="expressEnquiry" enctype="multipart/form-data" id="expressEnquiryForm">
@@ -511,7 +511,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 });
 </script>';
 
-        return $test.'<br>'.$form . $progressJQuery;
+        return $form . $progressJQuery;
     }
 } // Class wpb_widget ends here
 
