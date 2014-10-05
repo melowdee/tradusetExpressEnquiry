@@ -182,7 +182,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 
                     if (wp_mail($enquiryEmail, $subject, $message, $headers, $attachments)) {
                         $successMessage = __('Your message was sent successfully. Thanks.', 'traduset');
-                        $content = "<div class='success'>" . $message . "</div>";
+                        $content = "<div class='success'>" . $successMessage . "</div>";
 
                         //files nach dem emailvesand wieder löschen
                         foreach ($attachments as $attachment) {
