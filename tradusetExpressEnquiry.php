@@ -98,7 +98,7 @@ class traduset_enquiry_widget extends WP_Widget
                 $attachments = array();
 
                 $fileSizeTotal = 0;
-                if(isset $_FILES['uploadfile']) {
+                if(is_array($_FILES['uploadfile']['tmp_name'])){
                     foreach ($_FILES['uploadfile']['tmp_name'] as $key => $file_tmp) {
                         //Get the temp file path
 
