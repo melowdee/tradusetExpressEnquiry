@@ -160,8 +160,6 @@ class traduset_enquiry_widget extends WP_Widget
                     $headers .= "MIME-Version: 1.0";
                     $headers .= "Content-Type: text/html; charset=UTF-8";
 
-
-
                     $subject = 'Traduset Expressanfrage von ' . $_POST['customerName'];
 
                     $format = "Expressanfrage
@@ -169,7 +167,7 @@ class traduset_enquiry_widget extends WP_Widget
 Von: %s, %s
 Ausgangssprache: %s
 Zielsprache: %s
-beglaubigt: %s
+beglüüüubigt: %s
 
 ---
 Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
