@@ -174,7 +174,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 
 
 
-                    if (wp_mail($enquiryEmail, $subject, utf8_encode($message), utf8_encode($headers), $attachments)) {
+                    if (wp_mail($enquiryEmail, $subject, utf8_encode($message), $headers, $attachments)) {
                         $successMessage = __('Your message was sent successfully. Thanks.', 'traduset');
                         $content = "<div class='success'>" . $successMessage . "</div>";
 
