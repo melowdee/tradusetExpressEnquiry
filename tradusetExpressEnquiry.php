@@ -155,7 +155,7 @@ class traduset_enquiry_widget extends WP_Widget
             } else {
                 if (isset ($_POST["submitExpressEnquiry"])) {
                     $headers = 'From: Taduset Übersetzungsbüro <info@traduset.de>' . "\r\n";
-                    $subject = 'Traduset Expressanfrage von ' . utf8_encode($_POST['customerName']);
+                    $subject = 'Traduset Expressanfrage von ' . htmlentities($_POST['customerName'],null,'ISO-8859-1');
 
                     $format = "Expressanfrage
 
