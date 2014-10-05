@@ -155,7 +155,13 @@ class traduset_enquiry_widget extends WP_Widget
             } else {
                 if (isset ($_POST["submitExpressEnquiry"])) {
                     $headers = 'From: Taduset Übersetzungsbüro <info@traduset.de>' . "\r\n";
-                    $subject = 'Traduset Expressanfrage von ' . htmlentities($_POST['customerName'],null,'ISO-8859-1');
+                    $headers .= "Return-Path: info@traduset.de";
+                    $headers .= "MIME-Version: 1.0";
+                    $headers .= "Content-Type: text/html; charset=UTF-8";
+
+
+
+                    $subject = 'Traduset Expressanfrage von ' . $_POST['customerName'];
 
                     $format = "Expressanfrage
 
@@ -169,12 +175,13 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 
                     $message = sprintf($format, $_POST['customerName'], $_POST['customerEmail'], $_POST['sourceLanguage'], $_POST['targetLanguage'], $_POST['certified']);
 
-                    if (!filter_var($enquiryEmail, FILTER_VALIDATE_EMAIL))
+                    if (!filter_var($enquiryEmail, FILTER_VALIDATE_EMAIL)){
                         $enquiryEmail = 'info@traduset.de';
+                    }
 
 
 
-                    if (wp_mail($enquiryEmail, $subject, utf8_encode($message), $headers, $attachments)) {
+                    if (wp_mail($enquiryEmail, $subject, $message, $headers, $attachments)) {
                         $successMessage = __('Your message was sent successfully. Thanks.', 'traduset');
                         $content = "<div class='success'>" . $successMessage . "</div>";
 
