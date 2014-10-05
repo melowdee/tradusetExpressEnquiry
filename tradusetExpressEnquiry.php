@@ -174,6 +174,10 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
                     if (!filter_var($enquiryEmail, FILTER_VALIDATE_EMAIL))
                         $enquiryEmail = 'info@traduset.de';
 
+
+                    add_filter( 'wp_mail_content_type','set_html_content_type' );
+
+
                     if (wp_mail($enquiryEmail, $subject, $message, $headers, $attachments)) {
                         $successMessage = __('Your message was sent successfully. Thanks.', 'traduset');
                         $content = "<div class='success'>" . $successMessage . "</div>";
@@ -182,6 +186,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
                         foreach ($attachments as $attachment) {
                             unlink($attachment);
                         }
+                        remove_filter( 'wp_mail_content_type', 'set_html_content_type');
                     } else {
                         $sendErrorMessage = __('Failed to send your message. Please try later or contact the administrator by another method.', 'traduset');
                         $content = "<div class=\"error\">" . $sendErrorMessage . "</div>";
