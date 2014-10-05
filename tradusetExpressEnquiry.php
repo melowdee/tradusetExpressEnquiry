@@ -169,14 +169,12 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 
                     $message = sprintf($format, $_POST['customerName'], $_POST['customerEmail'], $_POST['sourceLanguage'], $_POST['targetLanguage'], $_POST['certified']);
 
-                    $message = wp_strip_all_tags($message);
-
                     if (!filter_var($enquiryEmail, FILTER_VALIDATE_EMAIL))
                         $enquiryEmail = 'info@traduset.de';
 
 
 
-                    if (wp_mail($enquiryEmail, $subject, $message, $headers, $attachments)) {
+                    if (wp_mail($enquiryEmail, $subject, utf8_encode($message), utf8_encode($headers), $attachments)) {
                         $successMessage = __('Your message was sent successfully. Thanks.', 'traduset');
                         $content = "<div class='success'>" . $successMessage . "</div>";
 
