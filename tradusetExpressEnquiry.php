@@ -299,6 +299,8 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         $yes = __('yes', 'traduset');
         $no = __('no', 'traduset');
 
+        $test = htmlentities("ääää öööö üüüü ääää", null, "UTF-8");
+
 
         $form = '<form action="' . $_SERVER['PHP_SELF'] . '" method="post" name="expressEnquiry" enctype="multipart/form-data" id="expressEnquiryForm">
             <fieldset>
@@ -509,7 +511,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 });
 </script>';
 
-        return $form . $progressJQuery;
+        return $test.'<br>'.$form . $progressJQuery;
     }
 } // Class wpb_widget ends here
 
