@@ -169,7 +169,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 
                     $message = sprintf($format, $_POST['customerName'], $_POST['customerEmail'], $_POST['sourceLanguage'], $_POST['targetLanguage'], $_POST['certified']);
 
-                    $message = utf8_encode($message);
+                    $message = wp_strip_all_tags($message);
 
                     if (!filter_var($enquiryEmail, FILTER_VALIDATE_EMAIL))
                         $enquiryEmail = 'info@traduset.de';
