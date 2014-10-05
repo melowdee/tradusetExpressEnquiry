@@ -155,12 +155,14 @@ class traduset_enquiry_widget extends WP_Widget
                 $content = $this->getEnquiryForm($enquiryFormValues, $enquiryFormErrors, $maxUploadSize);
             } else {
                 if (isset ($_POST["submitExpressEnquiry"])) {
+                    $customerName = htmlentities($_POST);
+
                     $headers = 'From: Taduset Übersetzungsbüro <info@traduset.de>' . "\r\n";
                     $headers .= "Return-Path: info@traduset.de";
                     $headers .= "MIME-Version: 1.0";
                     $headers .= "Content-Type: text/html; charset=UTF-8";
 
-                    $subject = 'Traduset Expressanfrage von ' . $_POST['customerName'];
+                    $subject = 'Traduset Expressanfrage von ' . $customerName;
 
                     $format = "Expressanfrage
 
@@ -172,7 +174,7 @@ beglaubigt: %s
 ---
 Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 
-                    $message = sprintf($format, $_POST['customerName'], $_POST['customerEmail'], $_POST['sourceLanguage'], $_POST['targetLanguage'], $_POST['certified']);
+                    $message = sprintf($format, $customerName, $_POST['customerEmail'], $_POST['sourceLanguage'], $_POST['targetLanguage'], $_POST['certified']);
 
                     if (!filter_var($enquiryEmail, FILTER_VALIDATE_EMAIL)){
                         $enquiryEmail = 'info@traduset.de';
