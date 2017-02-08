@@ -14,6 +14,7 @@ Description: Ein Webformular für die Sidebar
 */
 
 
+
 // Creating the widget
 class traduset_enquiry_widget extends WP_Widget
 {
