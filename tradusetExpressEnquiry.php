@@ -94,7 +94,6 @@ class traduset_enquiry_widget extends WP_Widget
 
             if (count($enquiryFormErrors) == 0) {
 
-                $maxAllowdUploadSize =
                 $allowed = array('pdf', 'gif', 'jpg', 'JPG', 'png', 'docx', 'doc', 'xls', 'xlsx', 'ppt', 'pptx', 'ods', 'csv', 'txt', 'pages', 'rtf');
                 $attachments = array();
 
@@ -119,7 +118,7 @@ class traduset_enquiry_widget extends WP_Widget
 
                         if ($error == 0) {
                             $ext = pathinfo($file_name, PATHINFO_EXTENSION);
-                            if (!in_array($ext, $allowed)) {
+                            if (!in_array(strtolower($ext), $allowed)) {
                                 $invalidFileFormatMessage = __('This file type is not allowed.', 'traduset');
                                 $enquiryFormErrors['uploadFile'] = "<div class=\"error\" id=\"uploadError\">" . $invalidFileFormatMessage . "</div>";
                             } else {
