@@ -359,7 +359,8 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
                 </div>
             </div>
             <br />
-            <span style="font-size: smaller" ' .$datenschutz . '</span>
+            <span style="font-size: smaller"> Durch Absenden dieses Formular bestätige ich die Kenntniss der <a href="https://www.traduset.de/datenschutzerklaerung/" target="_blank">Datenschutzerklärung</a> und bin mit dem Senden und Speichern meiner Daten einverstanden.</span>
+            <br>
             <input type="submit" name="submitExpressEnquiry" value="' . $sendForm . '" name="send" id="expressEnquirySubmit">
 
             </fieldset>
