@@ -41,6 +41,7 @@ class traduset_enquiry_widget extends WP_Widget
         $title = apply_filters('widget_title', $instance['title']);
         $enquiryEmail = $instance['enquiryEmail'];
         $language = $instance['language'];
+        $serverName = __('Traduset Übersetzungsbüro & Dolmetscherdient', 'traduset');
 
         $upload_dir = wp_upload_dir();
         $base_dir = $upload_dir['basedir'] . '/enquiry/';
@@ -164,9 +165,9 @@ class traduset_enquiry_widget extends WP_Widget
                     $headers .= "MIME-Version: 1.0";
                     $headers .= "Content-Type: text/text; charset=UTF-8";
 
-                    $subject = 'Traduset Expressanfrage von ' . $customerName;
+                    $subject = 'Traduset ' . $title . ' von ' . $customerName;
 
-                    $format = "Expressanfrage
+                    $format = $title . "
 
 Von: %s, %s
 Ausgangssprache: %s
