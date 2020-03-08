@@ -298,7 +298,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
 		$customerEmail = __('E-mail', 'traduset');
 		$uploadFile = __('Upload file', 'traduset');
 		$sendForm = __('Send', 'traduset');
-		$datenschutz = __('Durch Absenden dieses Formulars bestätige ich die Kenntniss der Datenschutzerklärung und bin mit dem Senden und Speichern meiner Daten einverstanden.', 'traduset');
+		$datenschutz = __('Durch Absenden dieses Formulars bestätige ich die Kenntnis der Datenschutzerklärung und bin mit dem Senden und Speichern meiner Daten einverstanden.', 'traduset');
 		$uploadFileMessage = __('If you press the Control-Key you can choose more then one file. Valid file types are: pdf, gif, jpg, png, docx, doc, xls, xlsx, ppt, pptx, ods, csv, txt, pages, rtf.', 'traduset');
 		$successMessage = '<div class=\"success\"><h2>' . __('Your message was sent successfully. Thanks.', 'traduset') . '</h2></div>';
 		$missingFieldMessage = __('Please fill the required field.', 'traduset');
@@ -359,7 +359,7 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
                 </div>
             </div>
             <br />
-            <span style="font-size: smaller"> Durch Absenden dieses Formulars bestätige ich die Kenntniss der <a href="https://www.traduset.de/datenschutzerklaerung/" target="_blank">Datenschutzerklärung</a> und bin mit dem Senden und Speichern meiner Daten einverstanden.</span>
+            <span style="font-size: smaller">' . $datenschutz . '</span>
             <br>
             <input type="submit" name="submitExpressEnquiry" value="' . $sendForm . '" name="send" id="expressEnquirySubmit">
 
