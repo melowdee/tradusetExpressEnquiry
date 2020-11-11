@@ -437,14 +437,15 @@ Diese E-Mail wurde über das Expressformular von traduset.de gesendet";
         jQuery(function() {
 
  // initialize tooltip
-        jQuery("span#exclamation_mark").tooltip({
+/* 	
+jQuery("span#exclamation_mark").tooltip({
             // tweak the position
             position: \'top center\',
             // use the "slide" effect
             effect: \'slide\'
 
         });
-
+*/
     var progressbar = jQuery(\'.progressbar\');
     var percent = jQuery(\'.percent\');
     var status = jQuery(\'#status\');
