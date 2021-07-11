@@ -165,7 +165,7 @@ class traduset_enquiry_widget extends WP_Widget
 					$headers .= "MIME-Version: 1.0";
 					$headers .= "Content-Type: text/text; charset=UTF-8";
 
-					$subject = 'Express Anfrage Traduset (' . $language . ') von ' . $customerName;
+					$subject = 'Anfrage Traduset (' . $language . ') von ' . $customerName;
 
 					$format = $title . "
 
